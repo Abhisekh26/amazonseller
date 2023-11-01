@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Amazon Seller</title>
+    <style>
+      body {
+        background: rgba(176, 225, 234, 0.794);
+      }
+    </style>
+  </head>
+  <body>
+    <form action="#" onsubmit="registerOrder(event)">
+      <label for="price">Selling Price:</label>
+      <input type="number" id="price" />
+      <label for="productname">Product:</label>
+      <input type="text" id="productname" />
+      <label for="category">Choose a Category:</label>
+      <select id="category">
+        <option value="skincare">Skincare</option>
+        <option value="grocery">Grocery</option>
+        <option value="clothes">CLothes</option>
+      </select>
+      <input type="submit" />
+    </form>
+    <h2>Orders</h2>
+    <h3>
+      Skincare
+      <ul class="skincare"></ul>
+    </h3>
+    <h3>
+      Grocery
+      <ul class="grocery"></ul>
+    </h3>
+    <h3>
+      CLothes
+      <ul class="clothes"></ul>
+    </h3>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>
+    <script>
+      function registerOrder(event) {
+        event.preventDefault();
+        const price = document.getElementById("price").value;
+        const product = document.getElementById("productname").value;
+        const category = document.getElementById("category").value;
+
+        let myObj = {
+          price: Number(price),
+          product: product,
+          category: category,
+        };
+        axios
+          .post(
+            "https://crudcrud.com/api/53ff795aa3354e539820cae56149e8ee/seller",
+            myObj
+          )
+          .then((response) => {
+            showOrders(response.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+      window.addEventListener("DOMContentLoaded", () => {
+        axios
+          .get(
+            "https://crudcrud.com/api/53ff795aa3354e539820cae56149e8ee/seller"
+          )
+          .then((response) => {
+            console.log(response);
+            for (var i = 0; i < response.data.length; i++) {
+              showOrders(response.data[i]);
+            }
+          })
+          .catch((err) => console.log(err));
+      });
+      function showOrders(obj) {
+        const parentElem = document.querySelector(`.${obj.category}`);
+        const childElem = document.createElement("li");
+        childElem.textContent =
+          obj.price + " - " + obj.product + " - " + obj.category;
+        const deletebtn = document.createElement("input");
+        
+        deletebtn.type = "button";
+        deletebtn.value = "Delete";
+        deletebtn.onclick = () => {
+          axios
+            .delete(
+              `https://crudcrud.com/api/53ff795aa3354e539820cae56149e8ee/seller/${obj._id}`
+            )
+            .then()
+            .catch((err) => console.log(err));
+          parentElem.removeChild(childElem);
+        };
+        childElem.appendChild(deletebtn);
+        parentElem.appendChild(childElem);
+      }
+    </script>
+  </body>
+</html>
